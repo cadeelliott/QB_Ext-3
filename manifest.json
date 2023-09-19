@@ -1,32 +1,29 @@
 {
   "manifest_version": 3,
-  "name": "Copy Entities",
+  "name": "Network Monitor Extension",
   "version": "1.0",
-  "description": "Copy 'entities' network response",
-  "permissions": ["activeTab", "webNavigation"],
-  "host_permissions": [
-    "https://example.com/*"  // Replace with the URL of the site you want to target
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "activeTab",
+    "https://*/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://example.com/*"],  // Replace with the URL of the site you want to target
+      "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ],
+  "icons": {
+    "48": "icon.png"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
+      "48": "icon.png"
     }
-  },
-  "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
   }
 }
