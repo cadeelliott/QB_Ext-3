@@ -1,15 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "DevTools Network Data Copy",
+  "name": "Copy Entities",
   "version": "1.0",
-  "description": "Copy data from DevTools Network tab.",
-  "permissions": [
-    "activeTab",
-    "storage"
+  "description": "Copy 'entities' network response",
+  "permissions": ["activeTab", "webNavigation"],
+  "host_permissions": [
+    "https://example.com/*"  // Replace with the URL of the site you want to target
   ],
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://example.com/*"],  // Replace with the URL of the site you want to target
+      "js": ["content.js"]
+    }
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
