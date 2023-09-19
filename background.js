@@ -1,37 +1,37 @@
-// Listen for the extension's button click event from popup.js
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "copyData") {
-    // Execute a content script to fetch data from the DevTools Network tab
-    chrome.tabs.executeScript(
-      {
-        code:
-          // Code to fetch data from the DevTools Network tab
-          const entitiesResponse = [...window.devtools.networkRequests].find(request => request.name === "entities");
-          if (entitiesResponse) {
-            const responseData = entitiesResponse.response.json();
-            responseData.then(data => {
-              // Copy the JSON data to the clipboard
-              const copyText = JSON.stringify(data, null, 2);
-              const textArea = document.createElement("textarea");
-              textArea.value = copyText;
-              document.body.appendChild(textArea);
-              textArea.select();
-              document.execCommand("copy");
-              document.body.removeChild(textArea);
-            });
-          }
-        ,
-      },
-      function (result) {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError);
-          sendResponse({ success: false });
-        } else {
-          sendResponse({ success: true });
-        }
+// background.js
+
+// Function to fetch data from the "entities" section of the Network tab
+function fetchDataFromEntities() {
+  chrome.devtools.inspectedWindow.eval(
+    
+    // This code runs in the context of the inspected page
+    const entitiesResponse = performance.getEntriesByType('resource')
+      .filter(entry => entry.name.includes('entities.json'))[0];
+    
+    if (entitiesResponse) {
+      fetch(entitiesResponse.name)
+        .then(response => response.json())
+        .then(data => {
+          // Send the data to the extension popup
+          chrome.runtime.sendMessage({ data });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+    ,
+    function (result, isException) {
+      if (isException) {
+        console.error('Error in eval:', result);
       }
-    );
-    // Return true to indicate that sendResponse will be called asynchronously
-    return true;
+    }
+  );
+}
+
+// Listen for messages from the popup
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === 'copyData') {
+    // Call the function to fetch data and copy it to the clipboard
+    fetchDataFromEntities();
   }
 });
