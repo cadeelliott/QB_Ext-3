@@ -1,6 +1,6 @@
 chrome.webRequest.onCompleted.addListener(
   (details) => {
-    if (details.method === "GET" && details.url.includes("entities")) {
+    if (details.method === "POST" && details.url.includes("entities")) {
       fetch(details.url)
         .then((response) => response.text())
         .then((data) => {
