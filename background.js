@@ -1,19 +1,20 @@
 chrome.webRequest.onCompleted.addListener(
-  (details) => {
-    if (details.method === "POST" && details.url.includes("entities")) {
+  function(details) {
+    if (details.url === "https://c12.qbo.intuit.com/qbo12/v4/entities") {
       fetch(details.url)
-        .then((response) => response.text())
-        .then((data) => {
-          chrome.scripting.executeScript({
-            target: { tabId: details.tabId },
-            function: (data) => {
-              // Send the data to the content script
-              chrome.runtime.sendMessage({ response: data });
-            },
-            args: [data],
-          });
+        .then(response => response.text())
+        .then(responseText => {
+          // Store the response in a variable or perform any desired action
+          const responseData = responseText;
+          console.log(responseData);
+        })
+        .catch(error => {
+          console.error("Failed to fetch data:", error);
         });
     }
   },
-  { urls: ["<all_urls>"] }
+  {
+    urls: ["https://c12.qbo.intuit.com/qbo12/v4/entities"]
+  },
+  ["responseHeaders"]
 );
